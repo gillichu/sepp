@@ -692,11 +692,11 @@ def save_adjusted_score():
 def save_initial_steps(abstract_algorithm):
     save_sequence_filenames()
     save_initial_hmm(abstract_algorithm)
-    #save_scores_original(abstract_algorithm)
     save_hmm_sets()
     save_decomposition()
     realign_hmm_seq()
-    #save_adjusted_score()
+    # save_scores_original(abstract_algorithm)
+    # save_adjusted_score()
 
 def doPoisonRemoval(maxHMM, scores, queryNum):
     treeData = findDecomposition()
@@ -745,11 +745,13 @@ def saveFromBooleanInclude(hmmLeafs, strategyName):
                 newFasta = newFasta + data
         saveFasta(get_root_temp_dir() + "/data/internalData/" + dataFolderName + "/" + strategyName + "/newHMM/newHMMseq/" + str(a) + ".fasta", newFasta)
 
-def scoresToHMMSeq(strategyName):
+def scoresToHMMSeq(abstract_algorithm, strategyName):
     dataFolderName = giveAllFileNames()[4]
     ensureFolder(get_root_temp_dir() + "/data/internalData/" + dataFolderName + "/" + strategyName + "/queryToHmm/original.npy")
     ensureFolder(get_root_temp_dir() + "/data/internalData/" + dataFolderName + "/" + strategyName + "/newHMM/newHMMseq/")
     if strategyName in ["adjusted_bitscore", "upp"]: # ['stefan_UPP', 'stefan_UPPadjusted']:
+        save_scores_original(abstract_algorithm)
+        save_adjusted_score()
         scores = np.load(get_root_temp_dir() + "/data/internalData/" + dataFolderName + "/hmmScores/fullAdjusted.npy")
         if strategyName == "upp":
             scores = np.load(get_root_temp_dir() + "/data/internalData/" + dataFolderName + "/hmmScores/full.npy")
@@ -1520,7 +1522,7 @@ def hierchySearch(abstract_algorithm, adjusted_bitscore, early_stop, fakeSimulat
     _LOG.info(f"num_iteration in hierarchical search: {num_iteration}")
 
     per_query_hmm_chosen= np.argmax(scoresFull, axis=1)
-    maxHMM_original = np.argmax(scores_original, axis=1)
+    # maxHMM_original = np.argmax(scores_original, axis=1)
 
     # print(f"maxHMM_guess: {maxHMM_guess}")
     # print(f"maxHMM_original: {maxHMM_original}")

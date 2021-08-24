@@ -111,7 +111,7 @@ def run_upp_strats(abstract_algorithm, dirname, hier_upp, adjusted_bitscore, ear
 
     _LOG.info("[processing %s]" % strat)
     _LOG.info("[running scoresToHMMSeq]")
-    scoresToHMMSeq(strat)
+    scoresToHMMSeq(abstract_algorithm, strat)
     _LOG.info("[running buildAlignMerge, doResort is %s]" % doResort)
     buildAlignMerge(abstract_algorithm, strat, doResort=doResort)
     search_and_align_end_time = default_timer()
