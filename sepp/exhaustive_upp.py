@@ -10,6 +10,7 @@ import os
 import random
 import shutil
 import sys
+from timeit import default_timer
 
 from sepp import get_logger
 from sepp.alignment import MutableAlignment, ExtendedAlignment, _write_fasta
@@ -163,6 +164,7 @@ class UPPExhaustiveAlgorithm(ExhaustiveAlgorithm):
         options().info_file = "A_dummy_value"
         source_namespace = None
         upp2_namespace = None
+        start_backbone_time = default_timer()
         if(options().decomp_only is True):
             source_namespace = options()
             upp2_namespace = argparse.Namespace()
@@ -240,6 +242,12 @@ class UPPExhaustiveAlgorithm(ExhaustiveAlgorithm):
                 ("Backtranslation can be performed only when "
                  "input sequences are amino acid. "))
             exit(-1)
+
+        end_backbone_time = default_timer()
+        time_output_suffix = "upp2.time"
+        with open(self.get_output_filename(time_output_suffix), "a+") as f:
+            f.write(f"1-backbone: {end_backbone_time - start_backbone_time} seconds ({timedelta(seconds=end_backbone_time - start_backbone_time)})\n")
+
         if(source_namespace is not None):
             _LOG.debug("OPTIONS FOR UPP2")
             _LOG.debug(options().upp2.decomp_only)

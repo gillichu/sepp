@@ -1,6 +1,8 @@
 import copy
+from datetime import timedelta
 import random
 import sys
+from timeit import default_timer
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -720,13 +722,40 @@ def save_adjusted_score():
     np.save(get_root_temp_dir() + "/data/internalData/" + dataFolderName + "/hmmScores/fullAdjusted.npy", scores)
 
 def save_initial_steps(abstract_algorithm):
+    deduplication_start = default_timer()
     save_sequence_filenames()
+    deduplication_end = default_timer()
+    deduplication_time = deduplication_end - deduplication_start
+
+    build_hmm_start = default_timer()
     save_initial_hmm(abstract_algorithm)
+    build_hmm_end = default_timer()
+    build_hmm_time = build_hmm_end - build_hmm_start
+
+    build_array_start = default_timer()
     save_hmm_sets()
+    build_array_end = default_timer()
+    build_array_time = build_array_end - build_array_start
+
+    build_ancestor_matrix_start = default_timer()
     save_decomposition()
+    build_ancestor_matrix_end = default_timer()
+    build_ancestor_matrix_time = build_ancestor_matrix_end - build_ancestor_matrix_start
+
+    induce_start = default_timer()
     realign_hmm_seq()
+    induce_end = default_timer()
+    induce_time = induce_end - induce_start
     # save_scores_original(abstract_algorithm)
     # save_adjusted_score()
+
+    time_output_suffix = "upp2.time"
+    with open(abstract_algorithm.get_output_filename(time_output_suffix), "a+") as f:
+        f.write(f"2-a-deduplication: {deduplication_time} seconds ({timedelta(seconds=deduplication_time)})\n")
+        f.write(f"2-b-build_hmm: {build_hmm_time} seconds ({timedelta(seconds=build_hmm_time)})\n")
+        f.write(f"2-c-build_array: {build_array_time} seconds ({timedelta(seconds=build_array_time)})\n")
+        f.write(f"2-d-build_ancestor_matrix: {build_ancestor_matrix_time} seconds ({timedelta(seconds=build_ancestor_matrix_time)})\n")
+        f.write(f"2-e-induce: {induce_time} seconds ({timedelta(seconds=induce_time)})\n")
 
 def doPoisonRemoval(maxHMM, scores, queryNum):
     treeData = findDecomposition()

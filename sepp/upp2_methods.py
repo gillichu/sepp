@@ -92,6 +92,10 @@ def run_upp_strats(abstract_algorithm, dirname, hier_upp, adjusted_bitscore, ear
     set_all_file_names(hmm_folder_prefix, fragment_file, true_alignment, prediction_name, root_temp_dir, dataset_name)
     save_initial_steps(abstract_algorithm)
     preprocessing_end_time = default_timer()
+    time_output_suffix = "upp2.time"
+    with open(abstract_algorithm.get_output_filename(time_output_suffix), "a+") as f:
+        f.write(f"2-preprocessing: {preprocessing_end_time - preprocessing_start_time} seconds ({timedelta(seconds=preprocessing_end_time - preprocessing_start_time)})\n")
+
     search_and_align_start_time = default_timer()
     hierarchy_search_results = {
         "num_hmms_looked_at": None,
@@ -116,11 +120,9 @@ def run_upp_strats(abstract_algorithm, dirname, hier_upp, adjusted_bitscore, ear
     buildAlignMerge(abstract_algorithm, strat, doResort=doResort)
     search_and_align_end_time = default_timer()
 
-    time_output_suffix = "upp2.time"
     num_hmms_output_suffix = "upp2.num_hmms"
-    with open(abstract_algorithm.get_output_filename(time_output_suffix), "w") as f:
-        f.write(f"preprocessing: {preprocessing_end_time - preprocessing_start_time} seconds ({timedelta(seconds=preprocessing_end_time - preprocessing_start_time)})\n")
-        f.write(f"search and align: {search_and_align_end_time - search_and_align_start_time} seconds ({timedelta(seconds=search_and_align_end_time - search_and_align_start_time)})")
+    with open(abstract_algorithm.get_output_filename(time_output_suffix), "a+") as f:
+        f.write(f"3-search and align: {search_and_align_end_time - search_and_align_start_time} seconds ({timedelta(seconds=search_and_align_end_time - search_and_align_start_time)})")
     if (hier_upp):
         with open(abstract_algorithm.get_output_filename(num_hmms_output_suffix), "w") as f:
             f.write(f"num hmms looked at: {hierarchy_search_results['num_hmms_looked_at']}\n")
