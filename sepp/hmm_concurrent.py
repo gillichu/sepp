@@ -548,14 +548,6 @@ def save_decomposition():
     '''
     dataFolderName = giveAllFileNames()[4]
     sets = np.load(get_root_temp_dir() + "/data/internalData/" + dataFolderName + "/hmmSets.npy", allow_pickle=True)
-    
-    
-    
-def saveDecomposition():
-
-    dataFolderName = giveAllFileNames()[4]
-
-    sets = np.load("./data/internalData/" + dataFolderName + "/hmmSets.npy", allow_pickle=True)
 
 
 
