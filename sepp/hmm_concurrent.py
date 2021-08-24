@@ -548,12 +548,50 @@ def save_decomposition():
     '''
     dataFolderName = giveAllFileNames()[4]
     sets = np.load(get_root_temp_dir() + "/data/internalData/" + dataFolderName + "/hmmSets.npy", allow_pickle=True)
-    treeData = np.zeros((len(sets), len(sets)))
+    
+    
+    
+def saveDecomposition():
+
+    dataFolderName = giveAllFileNames()[4]
+
+    sets = np.load("./data/internalData/" + dataFolderName + "/hmmSets.npy", allow_pickle=True)
+
+
+
+    sizes = []
     for a in range(0, len(sets)):
-        for b in range(0, len(sets)):
-            set1, set2 = np.array(sets[a]), np.array(sets[b])
-            if np.intersect1d(set1, set2).shape[0] == set2.shape[0]:
-                treeData[a, b] = 1
+        sizes.append(a)
+    sizes = np.array(sizes).astype(int)
+
+    sizes_argsort = np.argsort(sizes)
+    argsort_inverse = np.argsort(sizes_argsort)
+
+    parentNode = np.zeros(len(sets)).astype(int)
+
+
+    for a in range(1, len(sets)):
+        currentParent = 0
+        for b in range(1, a):
+            if parentNode[b] == currentParent:
+                set1, set2 = np.array(sets[sizes_argsort[a]]), np.array(sets[sizes_argsort[b]])
+                if np.intersect1d(set1, set2).shape[0] == set1.shape[0]:
+                    currentParent = b
+        parentNode[a] = currentParent
+
+    treeData = np.zeros((len(sets), len(sets)))
+    for a1 in range(0, len(sets)):
+        a = int(len(sets) - 1 - a1)
+        b = parentNode[a]
+        treeData[a, a] = 1
+        treeData[b] = treeData[b] + treeData[a]
+
+    treeData[treeData > 1] = 1
+
+    treeData = treeData[argsort_inverse, :]
+    treeData = treeData[:, argsort_inverse]
+
+    
     ensureFolder(get_root_temp_dir() + "/data/internalData/" + dataFolderName + "/treeDecomp.npy")
     np.save(get_root_temp_dir() + "/data/internalData/" + dataFolderName + "/treeDecomp.npy", treeData)
 
