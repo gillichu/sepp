@@ -749,8 +749,8 @@ def save_initial_steps(abstract_algorithm):
     # save_scores_original(abstract_algorithm)
     # save_adjusted_score()
 
-    time_output_suffix = "upp2.time"
-    with open(abstract_algorithm.get_output_filename(time_output_suffix), "a+") as f:
+    time_output_suffix = "time.data"
+    with open(abstract_algorithm.get_upp2_output_filename(time_output_suffix), "a+") as f:
         f.write(f"2-a-deduplication: {deduplication_time} seconds ({timedelta(seconds=deduplication_time)})\n")
         f.write(f"2-b-build_hmm: {build_hmm_time} seconds ({timedelta(seconds=build_hmm_time)})\n")
         f.write(f"2-c-build_array: {build_array_time} seconds ({timedelta(seconds=build_array_time)})\n")

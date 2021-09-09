@@ -263,6 +263,10 @@ class AbstractAlgorithm(object):
         return os.path.join(
             self.options.outdir, "%s_%s" % (self.options.output, name))
 
+    def get_upp2_output_filename(self, name):
+        return os.path.join(
+            self.options.outdir, "upp2_%s_%s" % (self.options.output, name))
+
     def read_alignment_and_tree(self):
         _LOG.info("Reading input alignment: %s" % (
             self.options.alignment_file))

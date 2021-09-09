@@ -92,8 +92,8 @@ def run_upp_strats(abstract_algorithm, dirname, hier_upp, adjusted_bitscore, ear
     set_all_file_names(hmm_folder_prefix, fragment_file, true_alignment, prediction_name, root_temp_dir, dataset_name)
     save_initial_steps(abstract_algorithm)
     preprocessing_end_time = default_timer()
-    time_output_suffix = "upp2.time"
-    with open(abstract_algorithm.get_output_filename(time_output_suffix), "a+") as f:
+    time_output_suffix = "time.data"
+    with open(abstract_algorithm.get_upp2_output_filename(time_output_suffix), "a+") as f:
         f.write(f"2-preprocessing: {preprocessing_end_time - preprocessing_start_time} seconds ({timedelta(seconds=preprocessing_end_time - preprocessing_start_time)})\n")
 
     search_and_align_start_time = default_timer()
@@ -120,16 +120,16 @@ def run_upp_strats(abstract_algorithm, dirname, hier_upp, adjusted_bitscore, ear
     buildAlignMerge(abstract_algorithm, strat, doResort=doResort)
     search_and_align_end_time = default_timer()
 
-    num_hmms_output_suffix = "upp2.num_hmms"
-    with open(abstract_algorithm.get_output_filename(time_output_suffix), "a+") as f:
+    num_hmms_output_suffix = "num_hmms.data"
+    with open(abstract_algorithm.get_upp2_output_filename(time_output_suffix), "a+") as f:
         f.write(f"3-search and align: {search_and_align_end_time - search_and_align_start_time} seconds ({timedelta(seconds=search_and_align_end_time - search_and_align_start_time)})")
     if (hier_upp):
-        with open(abstract_algorithm.get_output_filename(num_hmms_output_suffix), "w") as f:
+        with open(abstract_algorithm.get_upp2_output_filename(num_hmms_output_suffix), "w") as f:
             f.write(f"num hmms looked at: {hierarchy_search_results['num_hmms_looked_at']}\n")
             f.write(f"total num hmms: {hierarchy_search_results['num_hmms']}\n")
             f.write(f"per query index hmm chosen: {list(hierarchy_search_results['per_query_hmm_chosen'])}\n")
             f.write(f"per query num hmm looked at: {list(hierarchy_search_results['per_query_hmms_looked_at'])}\n")
             f.write(f"per query avg num hmm looked at: {np.average(hierarchy_search_results['per_query_hmms_looked_at'])}\n")
 
-    _LOG.info(f"Time written to {abstract_algorithm.get_output_filename(time_output_suffix)}")
-    _LOG.info(f"Num hmms written to {abstract_algorithm.get_output_filename(num_hmms_output_suffix)}")
+    _LOG.info(f"Time written to {abstract_algorithm.get_upp2_output_filename(time_output_suffix)}")
+    _LOG.info(f"Num hmms written to {abstract_algorithm.get_upp2_output_filename(num_hmms_output_suffix)}")

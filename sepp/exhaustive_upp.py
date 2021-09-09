@@ -244,8 +244,8 @@ class UPPExhaustiveAlgorithm(ExhaustiveAlgorithm):
             exit(-1)
 
         end_backbone_time = default_timer()
-        time_output_suffix = "upp2.time"
-        with open(self.get_output_filename(time_output_suffix), "a+") as f:
+        time_output_suffix = "time.data"
+        with open(self.get_upp2_output_filename(time_output_suffix), "a+") as f:
             f.write(f"1-backbone: {end_backbone_time - start_backbone_time} seconds ({timedelta(seconds=end_backbone_time - start_backbone_time)})\n")
 
         if(source_namespace is not None):
