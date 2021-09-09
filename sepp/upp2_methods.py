@@ -1,7 +1,9 @@
 from datetime import timedelta
 import glob
 import os
+from pathlib import Path
 import subprocess
+import shutil
 from timeit import default_timer
 
 import numpy as np
@@ -71,26 +73,33 @@ def run_upp_strats(abstract_algorithm, dirname, hier_upp, adjusted_bitscore, ear
     '''
     preprocessing_start_time = default_timer()
     _LOG.info("[run_upp_strats]")
-
-
     # globdir = glob.glob(os.path.join(dirname, "output*"))
     # assert len(globdir) == 1
     # outputdirname = globdir[0]
     root_temp_dir = get_root_temp_dir()
+
+    if(hasattr(abstract_algorithm.options.upp2, "ensemble_path")):
+        # copy files
+        Path(f"{root_temp_dir}/data").mkdir()
+        ensemble_root = abstract_algorithm.options.upp2.ensemble_path
+        shutil.copytree(f"{ensemble_root}/root", f"{root_temp_dir}/root")
+        shutil.copytree(f"{ensemble_root}/fragment_chunks", f"{root_temp_dir}/fragment_chunks")
+        shutil.copytree(f"{ensemble_root}/internalData", f"{root_temp_dir}/data/internalData")
+
     hmm_folder_prefix = "%s/root/P_0/" % root_temp_dir
     # Nit: We should be able to retrieve the same information from options().fragment_file
     fragment_file_suffix = os.listdir(root_temp_dir + "/fragment_chunks/")[0]
     fragment_file = "%s/fragment_chunks/%s" % (root_temp_dir, fragment_file_suffix)
-    # predictionName = './%s/UPPoutput/%s_output_alignment.fasta' % dirpath
-
     # TODO: Prediction name may get passed in
     prediction_name = ""
     # TODO: this is something we need to remove
     true_alignment = ""
     dataset_name = "default-value-not-empty"
 
+    # predictionName = './%s/UPPoutput/%s_output_alignment.fasta' % dirpath
     set_all_file_names(hmm_folder_prefix, fragment_file, true_alignment, prediction_name, root_temp_dir, dataset_name)
-    save_initial_steps(abstract_algorithm)
+    if(not hasattr(abstract_algorithm.options.upp2, "ensemble_path")):
+        save_initial_steps(abstract_algorithm)
     preprocessing_end_time = default_timer()
     time_output_suffix = "time.data"
     with open(abstract_algorithm.get_upp2_output_filename(time_output_suffix), "a+") as f:

@@ -180,6 +180,8 @@ class UPPExhaustiveAlgorithm(ExhaustiveAlgorithm):
             }
             if(isinstance(source_namespace.decomp_only, str)):
                 upp2_configs = {flag: bool(distutils.util.strtobool(upp2_configs[flag])) for flag in upp2_configs}
+            if(hasattr(source_namespace, "ensemble_path")):
+                upp2_configs["ensemble_path"] = source_namespace.ensemble_path
             for (k, v) in upp2_configs.items():
                 upp2_namespace.__setattr__(k, v)
                 delattr(options(), k)
@@ -188,6 +190,8 @@ class UPPExhaustiveAlgorithm(ExhaustiveAlgorithm):
             _LOG.debug("bitscore_adjust " + str(upp2_namespace.bitscore_adjust))
             _LOG.debug("early stop: " + str(upp2_namespace.early_stop))
             _LOG.debug("hier upp: " + str(upp2_namespace.hier_upp))
+            if(hasattr(upp2_namespace, "ensemble_path")):
+                _LOG.debug("ensemble path: " + str(upp2_namespace.ensemble_path))
             assert isinstance(upp2_namespace.decomp_only, bool)
             options().__setattr__("upp2", upp2_namespace)
 
@@ -443,7 +447,12 @@ class UPPExhaustiveAlgorithm(ExhaustiveAlgorithm):
                 self.filtered_taxa))
 
     def build_jobs(self):
-        super().build_jobs()
+        if not hasattr(options().upp2, "ensemble_path"):
+            super().build_jobs()
+
+    def build_subproblems(self):
+        if not hasattr(options().upp2, "ensemble_path"):
+            super().build_subproblems()
 
     def connect_jobs(self):
         if not hasattr(options(), "upp2") or not options().upp2.decomp_only:
@@ -608,6 +617,13 @@ def augment_parser():
         default=False,
         help="Run with early stop in hierarchical search. " "[default: %(default)s]"
     )
+    upp2Group.add_argument(
+        "-m", "--ensemble_path",
+        dest="ensemble_path", metavar="ENSEMBLEPATH",
+        type=argparse_path,
+        default=False,
+        help="Path to ensemble data from a previous run of UPP2" "[default: %(default)s]"
+    )
 
     seppGroup = parser.add_argument_group(
         "SEPP Options".upper(),
@@ -636,6 +652,12 @@ def argparse_bool(argument):
     if(argument == "True" or argument == "False"):
         return bool(distutils.util.strtobool(argument))
     raise argparse.ArgumentTypeError("Boolean value expected [True, False]")
+
+def argparse_path(argument):
+    if(os.path.isdir(argument)):
+        return argument
+    else:
+        raise argparse.ArgumentTypeError("Valid path expected")
 
 def main():
     augment_parser()
