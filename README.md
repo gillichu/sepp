@@ -12,6 +12,9 @@ Each of these related tools has its own README file.
 [README.UPP.md](README.UPP.md)
 * **UPP** stands for "Ultra-large alignments using Phylogeny-aware Profiles", and addresses the problem of alignment of very large datasets, potentially containing fragmentary data. UPP can align datasets with up to 1,000,000 sequences.
 
+[README.UPP2.md](README.UPP2.md)
+* **UPP2** is an improvement on UPP and introduces proper bitscore weighting for the ensemble of HMMs and a fast Hierarchical and EarlyStop modes for the HMM search
+
 [README.HIPPI.md](README.HIPPI.md)
 * **HIPPI** stands for "Highly Accurate Protein Family Classification with Ensembles of HMMs", and addresses the problem of classifying query sequences to protein families.
 
