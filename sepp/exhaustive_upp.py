@@ -447,12 +447,12 @@ class UPPExhaustiveAlgorithm(ExhaustiveAlgorithm):
                 self.filtered_taxa))
 
     def build_jobs(self):
-        if not hasattr(options().upp2, "ensemble_path"):
+        if hasattr(options(), "upp2") and not hasattr(options().upp2, "ensemble_path"):
             super().build_jobs()
 
     def build_subproblems(self):
-        if not hasattr(options().upp2, "ensemble_path"):
-            super().build_subproblems()
+        if hasattr(options(), "upp2") and not hasattr(options().upp2, "ensemble_path"):
+            return super().build_subproblems()
 
     def connect_jobs(self):
         if not hasattr(options(), "upp2") or not options().upp2.decomp_only:
