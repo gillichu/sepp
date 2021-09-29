@@ -77,19 +77,21 @@ def run_upp_strats(abstract_algorithm, dirname, hier_upp, adjusted_bitscore, ear
     # assert len(globdir) == 1
     # outputdirname = globdir[0]
     root_temp_dir = get_root_temp_dir()
+    fragment_file = None
 
     if(hasattr(abstract_algorithm.options.upp2, "ensemble_path")):
         # copy files
         Path(f"{root_temp_dir}/data").mkdir()
         ensemble_root = abstract_algorithm.options.upp2.ensemble_path
         shutil.copytree(f"{ensemble_root}/root", f"{root_temp_dir}/root")
-        shutil.copytree(f"{ensemble_root}/fragment_chunks", f"{root_temp_dir}/fragment_chunks")
         shutil.copytree(f"{ensemble_root}/internalData", f"{root_temp_dir}/data/internalData")
+        fragment_file = abstract_algorithm.options.fragment_file.name
+    else:
+        fragment_file_suffix = os.listdir(root_temp_dir + "/fragment_chunks/")[0]
+        fragment_file = "%s/fragment_chunks/%s" % (root_temp_dir, fragment_file_suffix)
 
     hmm_folder_prefix = "%s/root/P_0/" % root_temp_dir
     # Nit: We should be able to retrieve the same information from options().fragment_file
-    fragment_file_suffix = os.listdir(root_temp_dir + "/fragment_chunks/")[0]
-    fragment_file = "%s/fragment_chunks/%s" % (root_temp_dir, fragment_file_suffix)
     # TODO: Prediction name may get passed in
     prediction_name = ""
     # TODO: this is something we need to remove
