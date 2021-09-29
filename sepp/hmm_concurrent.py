@@ -101,9 +101,9 @@ def giveQueries():
     file_obj = open(queryName)
     queries = []
     count1 = 0
-    for line_number, i in enumerate(file_obj):
-        if line_number % 2 == 0:
-            queries.append(i[1:-1])
+    for line in file_obj:
+        if line[0] == ">":
+            queries.append(line[1:-1])
     queries = np.array(queries)
     return queries
 
