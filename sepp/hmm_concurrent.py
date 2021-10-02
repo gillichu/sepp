@@ -293,14 +293,20 @@ def addHMMSearchJob(abstract_algorithm, hmmName, queryName, scoreName):
 def addHMMBuildJob(abstract_algorithm, hmmName, seqName):
     ensureFolder(hmmName)
     hmmbuild_job = HMMBuildJob()
-    hmmbuild_job.setup(seqName, hmmName, **vars(abstract_algorithm.options.hmmbuild))
+    if(abstract_algorithm.options.molecule is not None):
+        hmmbuild_job.setup(seqName, hmmName, molecule=abstract_algorithm.options.molecule, **vars(abstract_algorithm.options.hmmbuild))
+    else:
+        hmmbuild_job.setup(seqName, hmmName, molecule=abstract_algorithm.options.molecule, **vars(abstract_algorithm.options.hmmbuild))
     JobPool().enqueue_job(hmmbuild_job)
 
 def addHMMAlignJob(abstract_algorithm, hmmName, queryName, predictionName):
     ensureFolder(predictionName)
     hmmalign_job = HMMAlignJob(**vars(abstract_algorithm.options.hmmalign))
     # _LOG.debug(str(abstract_algorithm.options.hmmalign))
-    hmmalign_job.setup(hmmName, queryName, predictionName, trim=False)
+    if(abstract_algorithm.options.molecule is not None):
+        hmmalign_job.setup(hmmName, queryName, predictionName, molecule=abstract_algorithm.options.molecule, trim=False)
+    else:
+        hmmalign_job.setup(hmmName, queryName, predictionName, trim=False)
     JobPool().enqueue_job(hmmalign_job)
 
 def runHMMbuild(abstract_algorithm, hmmName, seqName):
