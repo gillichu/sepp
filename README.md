@@ -2,7 +2,7 @@
 ------------------------------------
 Summary
 ------------------------------------
-This repository is a fork of [![SEPP](https://github.com/smirarab/sepp)] and includes code for SEPP, TIPP, UPP, HIPPI.  The three methods use ensembles of Hidden Markov Models (HMMs) in different ways, each focusing on a different problem.
+This repository is a fork of [SEPP](https://github.com/smirarab/sepp) and includes code for SEPP, TIPP, UPP, HIPPI.  The three methods use ensembles of Hidden Markov Models (HMMs) in different ways, each focusing on a different problem.
 
 Each of these related tools has its own README file.
 
