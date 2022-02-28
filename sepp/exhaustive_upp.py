@@ -121,7 +121,7 @@ class UPPExhaustiveAlgorithm(ExhaustiveAlgorithm):
         _LOG.info("Writing backbone set. ")
         backbone = get_temp_file("backbone", "backbone", ".fas")
         _write_fasta(backbone_sequences, backbone)
-        if(hasattr(options(), "magus")):
+        if(hasattr(options(), "magus") and hasattr(options(), "fasttree")):
             # run MAGUS and fasttree
             magus_output_filename = self.get_output_filename("magus.fasta")
             magusalign_job = MAGUSAlignJob()
