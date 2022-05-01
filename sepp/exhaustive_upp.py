@@ -199,7 +199,7 @@ class UPPExhaustiveAlgorithm(ExhaustiveAlgorithm):
             }
             if(isinstance(source_namespace.decomp_only, str)):
                 upp2_configs = {flag: bool(distutils.util.strtobool(upp2_configs[flag])) for flag in upp2_configs}
-            if(hasattr(source_namespace, "ensemble_path")):
+            if(hasattr(source_namespace, "ensemble_path") and source_namespace.ensemble_path != False):
                 upp2_configs["ensemble_path"] = source_namespace.ensemble_path
             for (k, v) in upp2_configs.items():
                 upp2_namespace.__setattr__(k, v)
@@ -467,11 +467,11 @@ class UPPExhaustiveAlgorithm(ExhaustiveAlgorithm):
                 self.filtered_taxa))
 
     def build_jobs(self):
-        if hasattr(options(), "upp2") and not hasattr(options().upp2, "ensemble_path"):
+        if not hasattr(options(), "upp2") or (hasattr(options(), "upp2") and not hasattr(options().upp2, "ensemble_path")):
             super().build_jobs()
 
     def build_subproblems(self):
-        if hasattr(options(), "upp2") and not hasattr(options().upp2, "ensemble_path"):
+        if not hasattr(options(), "upp2") or (hasattr(options(), "upp2") and not hasattr(options().upp2, "ensemble_path")):
             return super().build_subproblems()
 
     def connect_jobs(self):
