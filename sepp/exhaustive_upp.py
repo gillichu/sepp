@@ -15,7 +15,7 @@ from timeit import default_timer
 from sepp import get_logger
 from sepp.alignment import MutableAlignment, ExtendedAlignment, _write_fasta
 from sepp.exhaustive import JoinAlignJobs, ExhaustiveAlgorithm
-from sepp.jobs import PastaAlignJob
+from sepp.jobs import PastaAlignJob,MAGUSAlignJob,FastTreeJob
 from sepp.filemgr import get_temp_file,get_root_temp_dir
 from sepp.config import options, valid_decomp_strategy
 import sepp.config
@@ -121,28 +121,47 @@ class UPPExhaustiveAlgorithm(ExhaustiveAlgorithm):
         _LOG.info("Writing backbone set. ")
         backbone = get_temp_file("backbone", "backbone", ".fas")
         _write_fasta(backbone_sequences, backbone)
+        if(hasattr(options(), "magus") and hasattr(options(), "fasttree")):
+            # run MAGUS and fasttree
+            magus_output_filename = self.get_output_filename("magus.fasta")
+            magusalign_job = MAGUSAlignJob()
+            magusalign_job.setup(backbone, magus_output_filename)
+            _LOG.info("Running MAGUS backbone")
+            magusalign_job.run()
+            _LOG.info(f"MAGUS should be written to {magus_output_filename}")
 
-        _LOG.info("Generating pasta backbone alignment and tree. ")
-        pastaalign_job = PastaAlignJob()
-        molecule_type = options().molecule
-        if options().molecule == 'amino':
-            molecule_type = 'protein'
-        pastaalign_job.setup(backbone, options().backbone_size,
-                             molecule_type, options().cpu,
-                             **vars(options().pasta))
-        pastaalign_job.run()
-        (a_file, t_file) = pastaalign_job.read_results()
+            fasttree_output_filename = self.get_output_filename("magus_fasttree.tree")
+            fasttree_job = FastTreeJob()
+            fasttree_job.setup(magus_output_filename, fasttree_output_filename, self.molecule)
+            _LOG.info("Running FastTree backbone")
+            fasttree_job.run()
+            _LOG.info(f"FastTree should be written to {fasttree_output_filename}")
+            options().placement_size = self.options.backbone_size
+            options().alignment_file = open(magus_output_filename)
+            options().tree_file = open(fasttree_output_filename)
+        else:
+            _LOG.info("Generating pasta backbone alignment and tree. ")
+            pastaalign_job = PastaAlignJob()
+            molecule_type = options().molecule
+            if options().molecule == 'amino':
+                molecule_type = 'protein'
+            pastaalign_job.setup(backbone, options().backbone_size,
+                                 molecule_type, options().cpu,
+                                 **vars(options().pasta))
+            pastaalign_job.run()
+            (a_file, t_file) = pastaalign_job.read_results()
 
-        shutil.copyfile(t_file, self.get_output_filename("pasta.fasttree"))
-        shutil.copyfile(a_file, self.get_output_filename("pasta.fasta"))
+            shutil.copyfile(t_file, self.get_output_filename("pasta.fasttree"))
+            shutil.copyfile(a_file, self.get_output_filename("pasta.fasta"))
 
-        options().placement_size = self.options.backbone_size
-        options().alignment_file = open(
-            self.get_output_filename("pasta.fasta"))
-        options().tree_file = open(self.get_output_filename("pasta.fasttree"))
+            options().placement_size = self.options.backbone_size
+            options().alignment_file = open(
+                self.get_output_filename("pasta.fasta"))
+            options().tree_file = open(self.get_output_filename("pasta.fasttree"))
+
         _LOG.info(
-            "Backbone alignment written to %s.\nBackbone tree written to %s"
-            % (options().alignment_file, options().tree_file))
+                "Backbone alignment written to %s.\nBackbone tree written to %s"
+                % (options().alignment_file, options().tree_file))
         sequences.set_alignment(fragments)
         if len(sequences) == 0:
             sequences = MutableAlignment()
@@ -180,7 +199,7 @@ class UPPExhaustiveAlgorithm(ExhaustiveAlgorithm):
             }
             if(isinstance(source_namespace.decomp_only, str)):
                 upp2_configs = {flag: bool(distutils.util.strtobool(upp2_configs[flag])) for flag in upp2_configs}
-            if(hasattr(source_namespace, "ensemble_path")):
+            if(hasattr(source_namespace, "ensemble_path") and source_namespace.ensemble_path != False):
                 upp2_configs["ensemble_path"] = source_namespace.ensemble_path
             for (k, v) in upp2_configs.items():
                 upp2_namespace.__setattr__(k, v)
@@ -224,7 +243,8 @@ class UPPExhaustiveAlgorithm(ExhaustiveAlgorithm):
                 )
         ):
             # assert no parallelization when decomp_only
-            # TODO: restore old cpu value
+            # TODO: it doesn't seem that restoring old cpu value is necessary
+            # since JobPool() is called empty as a singleton class
             options().cpu = 1
         # TODO: check that hier_upp is True whenever early_stop is True
 
@@ -447,11 +467,11 @@ class UPPExhaustiveAlgorithm(ExhaustiveAlgorithm):
                 self.filtered_taxa))
 
     def build_jobs(self):
-        if hasattr(options(), "upp2") and not hasattr(options().upp2, "ensemble_path"):
+        if not hasattr(options(), "upp2") or (hasattr(options(), "upp2") and not hasattr(options().upp2, "ensemble_path")):
             super().build_jobs()
 
     def build_subproblems(self):
-        if hasattr(options(), "upp2") and not hasattr(options().upp2, "ensemble_path"):
+        if not hasattr(options(), "upp2") or (hasattr(options(), "upp2") and not hasattr(options().upp2, "ensemble_path")):
             return super().build_subproblems()
 
     def connect_jobs(self):

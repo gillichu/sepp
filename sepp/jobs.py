@@ -730,6 +730,46 @@ class FastTreeJob(ExternalSeppJob):
         return self.output_file
 
 
+class MAGUSAlignJob(ExternalSeppJob):
+    """
+    The Job class that generates a MAGUS alignment
+    """
+    def __init__(self, **kwargs):
+        self.job_type = "python"
+        ExternalSeppJob.__init__(self, self.job_type)
+        self.input_file = None  # input sequences
+        self.output_file = None  # output tree
+        self.magus_path =sepp.config.options().__getattribute__("magus").path
+
+    def setup(self, input_file, output_file):
+        """
+        """
+        self.input_file = input_file
+        self.output_file = output_file
+
+    def setup_for_subproblem(self):
+        """
+        Use setup for generating backbone tree
+        """
+        return
+
+    def get_invocation(self):
+        invoc = [self.path, self.magus_path, "-i", self.input_file, "-o", self.output_file]
+        return invoc
+
+    def characterize_input(self):
+        return "magus %s %s " % (
+            self.input_file, self.output_file)
+
+    def read_results(self):
+        """
+        Check and return file
+        """
+        assert os.path.exists(self.output_file)
+        assert os.stat(self.output_file)[stat.ST_SIZE] != 0
+        return self.output_file
+
+
 class PastaAlignJob(ExternalSeppJob):
     """
     The Job class that generates a Pasta alignment and tree

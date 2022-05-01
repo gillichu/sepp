@@ -886,6 +886,7 @@ def generateNewHMM(abstract_algorithm, strategyName):
         hmmName = get_root_temp_dir() + "/data/internalData/" + dataFolderName + "/" + strategyName + "/newHMM/hmm/" + str(a) + ".hmm"
         ensureFolder(hmmName)
         addHMMBuildJob(abstract_algorithm, hmmName, src)
+    _LOG.debug(f"JobPool actual cpus: {JobPool().cpus}")
     JobPool().wait_for_all_jobs()
 
 
