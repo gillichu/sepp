@@ -13,6 +13,13 @@ According to this new weighting the, we also present several strategies to redes
 
 We have also implemented a fastUPP strategy which does a fast search down the hierarchy of trees. That is, recursively from the root, we choose the child HMM which best fits our current query sequence, continuing until the leaf. 
 
+### Requirements
+These two software versions are required in the virtual environment prior to installing PASTA, SEPP, UPP, and UPP2.
+```
+pip install numpy==1.21.6
+pip install dendropy==4.5.2
+```
+
 ### Inputs
 
 The main pipeline for UPP2 can be found in the script `run_upp.py`. We recommend the use of a config file as followin

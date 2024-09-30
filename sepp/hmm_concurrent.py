@@ -4,7 +4,6 @@ import random
 import sys
 from timeit import default_timer
 
-import matplotlib.pyplot as plt
 import numpy as np
 import os
 import pathlib
@@ -362,7 +361,13 @@ def saveScoreSimple(abstract_algorithm, hmmNames, queryNames, scoreName):
             if line_number == 2:
                 argSpace = np.argwhere(np.array(list(i)) == ' ')[:, 0]
             if (len(ar) >= 30) and (line_number >= 3):
-                sequenceName = i[:20].replace(' ', '')
+                # sequenceName = i[:20].replace(' ', '')
+                sequenceName = ""
+                for current_char in i:
+                    if current_char == " " or current_char == "\t":
+                        break
+                    sequenceName += current_char
+
                 bitScore = float(i[posScore-1:posScore+5].replace(' ', ''))
                 dataOld.append([sequenceName, bitScore])
 
@@ -467,12 +472,6 @@ def saveScoreFromBool(abstract_algorithm, hmmNames, queryHMM, scoreName, noSave=
     else:
         ensureFolder(scoreName)
         np.save(scoreName, data)
-
-def compareScores(strategyName):
-    scoreStrat = np.load("%s/hmmScores/scoresFull/" % dirName + strategyName + "_full.npy")
-    scoreUPP = np.load("%s/hmmScores/full.npy" % dirName)
-    plt.plot(np.max(scoreStrat, axis=1)-np.max(scoreUPP, axis=1))
-    plt.show()
 
 def save_scores_original(abstract_algorithm):
     ''' This function saves the results of hmmsearch bitscores in full.npy.
@@ -614,7 +613,6 @@ def save_hmm_sets():
                 set1.append(i[1:-1])
 
         sets.append(set1)
-
 
 
     #print ("Q")
