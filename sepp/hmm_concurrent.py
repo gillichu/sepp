@@ -454,7 +454,12 @@ def saveScoreFromBool(abstract_algorithm, hmmNames, queryHMM, scoreName, noSave=
                 if line_number == 2:
                     argSpace = np.argwhere(np.array(list(i)) == ' ')[:, 0]
                 if (len(ar) >= 30) and (line_number >= 3):
-                    sequenceName = i[:20].replace(' ', '')
+                    # sequenceName = i[:20].replace(' ', '')
+                    sequenceName = ""
+                    for current_char in i:
+                        if current_char == " " or current_char == "\t":
+                            break
+                        sequenceName += current_char
                     # try:
                     bitScore = float(i[posScore-1:posScore+5].replace(' ', ''))
                     # except:
@@ -522,7 +527,12 @@ def processScoresOld():
             ar = i.split('  ')
             if (len(ar) >= 30) and (line_number >= 3):
                 bitScore = float(i[76:83].replace(' ', ''))
-                sequenceName = i[:20].replace(' ', '')
+                # sequenceName = i[:20].replace(' ', '')
+                sequenceName = ""
+                for current_char in i:
+                    if current_char == " " or current_char == "\t":
+                        break
+                    sequenceName += current_char
                 data.append([sequenceName, bitScore])
         data = np.array(data)
         np.save("%s/hmmScores/processed/" %  dirName + str(a) + ".npy", data)
